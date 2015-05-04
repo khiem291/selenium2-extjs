@@ -29,9 +29,6 @@ class ExtJSWebElement(object):
     classdocs
     '''
 
-    driver = None
-    wait = 0
-    top_element = None
     timeout_seconds = 5
     sleep_in_millis = 300
 
@@ -39,27 +36,31 @@ class ExtJSWebElement(object):
         '''
         Constructor
         '''
+        self.driver = None
+        self.driver_wait = None
+        self.top_element = None
+
         self.set_driver(driver)
-        
+
         if js_code:
             self.find_element_by_script(js_code)
-            
+
         if top_element:
             self.set_element(top_element)
 
     def set_driver(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(self.driver, self.timeout_seconds,
-                                  self.sleep_in_millis)
-        
+        self.driver_wait = WebDriverWait(self.driver, self.timeout_seconds,
+                                         self.sleep_in_millis)
+
     def set_element(self, element):
         self.top_element = element
-    
+
     def find_element_by_script(self, js_code):
         element = None
         try:
             element = self.driver.execute_script(js_code)
-            
+
         finally:
             self.set_element(element)
 
@@ -74,9 +75,12 @@ class ExtJSWebElement(object):
         self.wait_for_finish_ajax_request()
         script = "var el = arguments[0]; %s;" % (js_code)
         return self.driver.execute_script(script, element)
+
+    def wait_for_finish_ajax_request(self):
+        return True
     
     def click(self):
         self.top_element.click()
 
-    def wait_for_finish_ajax_request(self):
-        return True
+    def get_element(self):
+        pass
