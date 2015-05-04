@@ -89,9 +89,9 @@ class ExtJSComponent(ExtJSWebElement):
                 )
             )
 
-            self.ext_js_cmp_id = None
+            self.extjs_cmp_id = None
             if query_type == ExtJSQueryType.GetCmp:
-                self.ext_js_cmp_id = query
+                self.extjs_cmp_id = query
 
         if top_element:
             super(ExtJSComponent, self).__init__(
@@ -115,38 +115,41 @@ class ExtJSComponent(ExtJSWebElement):
         return query_script
 
     def get_el_dom(self):
-        return self.exec_script_on_ext_js_cmp("return extCmp.getEl().dom")
+        return self.exec_script_on_extjs_cmp("return extCmp.getEl().dom")
 
     def get_component_id(self):
         '''to get Component id by query'''
-        if self.ext_js_cmp_id is None:
+        if self.extjs_cmp_id is None:
             # well then we better have the WebElement!
             if self.top_element is None:
                 raise("Neither extJsCmpId or topElement has been set")
 
-            self.ext_js_cmp_id = self.exec_script_on_top_level_element(
-                SCRIPT_TOP_ELEMENT_TO_EXT_JS_ID)
+            self.extjs_cmp_id = self.exec_script_on_top_level_element(
+                SCRIPT_TOP_ELEMENT_TO_EXT_JS_ID
+            )
 
-        return self.ext_js_cmp_id
+        return self.extjs_cmp_id
 
     '''This is used to run java scripts on
         the ExtJS ExtJSComponent.For Example:
              execScriptOnExtJsComponent("return extCmp.getValue()");
         will run theJavaScript method getValue on the ExtJS component object.
     '''
-
-    def exec_script_on_ext_js_cmp(self, js_code):
-        script = "var extCmp = Ext.getCmp('%s'); %s;"
-        return self.exec_script_clean(script)
-
-    def exec_script_on_ext_js_cmp_return_boolean(self, js_code):
+    def exec_script_on_extjs_cmp(self, js_code):
         script = "var extCmp = Ext.getCmp('%s'); %s;" % (
             self.get_component_id(),
-            js_code)
+            js_code
+        )
+        return self.exec_script_clean(script)
 
-        return self.execScriptCleanReturnBoolean(script)
+    def exec_script_on_extjs_cmp_return_bool(self, js_code):
+        script = "var extCmp = Ext.getCmp('%s'); %s;" % (
+            self.get_component_id(),
+            js_code
+        )
+        return self.exec_script_clean_return_bool(script)
 
-    def exec_script_clean_return_boolean(self, script):
+    def exec_script_clean_return_bool(self, script):
         try:
             res = self.exec_script_clean(script)
             if res:
@@ -162,10 +165,13 @@ class ExtJSComponent(ExtJSWebElement):
      which contains the ID provided by getId()
      @return String
      '''
-
     def get_xpath(self):
-        return "%s return getPathTo(%s" % (FUNCTION_getXPathTo,
-                                           self.top_element)
+        return "%s return getPathTo(%s" % (
+            FUNCTION_getXPathTo, self.top_element
+        )
 
     def get_expression(self):
-        return "window.Ext.getCmp('%s')" % self.get_component_id()
+        return "Ext.getCmp('%s')" % self.get_component_id()
+    
+    def get_element(self):
+        pass
