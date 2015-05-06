@@ -14,11 +14,7 @@ class Tree(ExtJSComponent):
         '''
         Constructor
         '''
-        if query_type and query:
-            super(Tree, self).__init__(driver, query_type, query)
-
-        if top_element:
-            super(Tree, self).__init__(driver, top_element)
+        super(Tree, self).__init__(driver, query_type, query, top_element)
 
     def contains(self, node_id):
         return self.exec_script_clean_return_bool(
@@ -27,7 +23,7 @@ class Tree(ExtJSComponent):
 
     def get_root_node(self):
         tree_node = TreeNode(
-            self.driver, ExtJSQueryType.Custom, self.get_expression()
+            self.driver, ExtJSQueryType.GetCmp, self.get_component_id()
         )
         return tree_node.get_root_node()
 
@@ -38,7 +34,7 @@ class Tree(ExtJSComponent):
             )
         )
         tree_node = TreeNode(
-            self.driver, ExtJSQueryType.Custom, self.get_expression()
+            self.driver, ExtJSQueryType.GetCmp, self.get_component_id()
         )
 
         return tree_node.get_selected_node()

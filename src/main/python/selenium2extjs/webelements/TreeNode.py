@@ -2,6 +2,14 @@
 '''
 from selenium2extjs.webelements.ExtJSComponent import ExtJSComponent
 
+SCRIPT_FIND_CHILD = '''
+    %s.getRootNode().findChild('%s', '%s', true)
+'''
+
+SCRIPT_SELECT_CHILD = '''
+    %s.getSelectionModel().select(%s)
+'''
+
 
 class TreeNode(ExtJSComponent):
     '''
@@ -12,6 +20,8 @@ class TreeNode(ExtJSComponent):
         '''
         Constructor
         '''
+        self.node_data_recordid = "data-recordid"
+
         self.function_get_ui = ".getUI()"
         self.node_expression = ""
         self.node_ui_expression = ""
@@ -24,17 +34,17 @@ class TreeNode(ExtJSComponent):
     def get_root_node(self):
         self.node_expression = ".getRootNode()"
         self.exec_script_clean(
-            "%s.%s" % (self.tree_expression, self.node_expression)
+            "%s%s" % (self.tree_expression, self.node_expression)
         )
         return self
 
     def get_selected_node(self):
-        self.node_expression = ".getSelectionModel().getSelectedNode()"
+        self.node_expression = ".getSelectionModel().getLastSelected()"
         self.exec_script_clean(self.tree_expression + self.node_expression)
         return self
 
     def collapse_node(self):
-        self.node_expression = ".getSelectionModel().getSelectedNode()"
+        self.node_expression = ".getSelectionModel().getLastSelected()"
         self.exec_script_clean("%s.collapse()" % self.node_expression)
 
     def collapse_root_node(self):
@@ -47,31 +57,29 @@ class TreeNode(ExtJSComponent):
         )
 
     def expand_node(self):
-        self.node_expression = ".getSelectionModel().getSelectedNode()"
+        self.node_expression = ".getSelectionModel().getLastSelected()"
         self.exec_script_clean("%s.expand()" % self.node_expression)
 
     def expand_root_node(self):
         self.exec_script_clean("%s.expand()" % self.get_root_node())
 
     def find_child(self, attribute=None, value=None):
+        if not attribute:
+            attribute = "name"
+
+        script = SCRIPT_FIND_CHILD % (self.tree_expression, attribute, value)
+        script = SCRIPT_SELECT_CHILD % (self.tree_expression, script)
+
         if attribute:
-            self.exec_script_clean(
-                "%s.getRootNode().findChild('%s', '%s', true).select()" % (
-                    self.tree_expression, attribute, value
-                )
-            )
+            self.exec_script_clean(script)
 
         else:
             if not self.node_expression:
                 self.get_root_node()
 
-            self.exec_script_on_extjs_cmp(
-                "%s.findChild('name' , '%s', true ).select()" % (
-                    self.node_expression, value
-                )
-            )
+            self.exec_script_on_extjs_cmp(script)
 
-        return self
+        return self.get_selected_node()
 
     def has_child_nodes(self, params):
         return self.exec_script_on_extjs_cmp_return_bool(
@@ -98,10 +106,10 @@ class TreeNode(ExtJSComponent):
             "%s.isSelected()" % self.node_expression
         )
 
-    def select(self, node_id):
+    def select(self, node_instance):
         self.exec_script_clean(
-            ".getSelectionModel().select('%s'.nodeHash['%s'])" % (
-                self.get_expression(), node_id
+            "%s.getSelectionModel().select('%s')" % (
+                self.tree_expression, node_instance
             )
         )
         return self.get_selected_node()
@@ -120,7 +128,16 @@ class TreeNode(ExtJSComponent):
             )
         else:
             self.exec_script_clean(
-                "%s.getSelectionModel().getSelectedNode().getUI().toggleCheck(%s)" % (
+                "%s.getSelectionModel().getLastSelected().getUI().toggleCheck(%s)" % (
                     self.tree_expression, check
                 )
             )
+
+    def get_element(self):
+        self.node_expression = ".getSelectionModel().getLastSelected()"
+        data_recordid = self.exec_script_clean(
+            "return %s.id" % (self.tree_expression + self.node_expression)
+        )
+        return self.driver.find_element_by_xpath(
+            ".//*[@data-recordid='%s']//span" % data_recordid
+        )
