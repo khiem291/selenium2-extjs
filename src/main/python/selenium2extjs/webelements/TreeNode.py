@@ -50,6 +50,12 @@ class TreeNode(ExtJSComponent):
     def collapse_root_node(self):
         self.exec_script_clean("%s.collapse()" % self.get_root_node())
 
+    def collapse(self):
+        self.get_selected_node()
+        self.exec_script_clean(
+            "%s%s.collapse()" % (self.tree_expression, self.node_expression)
+        )
+
     def expand(self):
         self.get_selected_node()
         self.exec_script_clean(
@@ -132,6 +138,13 @@ class TreeNode(ExtJSComponent):
                     self.tree_expression, check
                 )
             )
+
+    def get_node_data(self):
+        self.get_selected_node()
+        data = self.exec_script_clean(
+            "return %s%s.data;" % (self.tree_expression, self.node_expression)
+        )
+        return data
 
     def get_element(self):
         self.node_expression = ".getSelectionModel().getLastSelected()"

@@ -78,7 +78,7 @@ class ExtJSWebElement(object):
 
     def wait_for_finish_ajax_request(self):
         return True
-    
+
     def click(self):
         self.top_element.click()
 
