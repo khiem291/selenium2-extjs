@@ -149,7 +149,7 @@ class TreeNode(ExtJSComponent):
     def get_element(self):
         self.node_expression = ".getSelectionModel().getLastSelected()"
         data_recordid = self.exec_script_clean(
-            "return %s.id" % (self.tree_expression + self.node_expression)
+            "return %s.internalId" % (self.tree_expression + self.node_expression)
         )
         return self.driver.find_element_by_xpath(
             ".//*[@data-recordid='%s']//span" % data_recordid
