@@ -65,7 +65,9 @@ SCRIPT_QUERY_CMP = '''
 SCRIPT_GET_CMP = '''
     return Ext.getCmp("%s").getEl().dom;
 '''
-
+SCRIPT_GET = '''
+    return Ext.get("%s").el.dom
+'''
 # need to handle is xtype to return the Id on GUI
 SCRIPT_TOP_ELEMENT_TO_EXT_JS_ID = '''
     %s;
@@ -107,8 +109,10 @@ class ExtJSComponent(ExtJSWebElement):
             )
 
         elif query_type == ExtJSQueryType.GetCmp:
-            SCRIPT_GET_CMP % (query)
+            query_script = SCRIPT_GET_CMP % (query)
 
+        elif query_type == ExtJSQueryType.Get:
+            query_script = SCRIPT_GET % (query)
         elif query_type == ExtJSQueryType.Custom:
             query_script = query
 
@@ -123,7 +127,7 @@ class ExtJSComponent(ExtJSWebElement):
             # well then we better have the WebElement!
             if self.top_element is None:
                 raise("Neither extJsCmpId or topElement has been set")
-
+            
             self.extjs_cmp_id = self.exec_script_on_top_level_element(
                 SCRIPT_TOP_ELEMENT_TO_EXT_JS_ID
             )
@@ -136,10 +140,12 @@ class ExtJSComponent(ExtJSWebElement):
         will run theJavaScript method getValue on the ExtJS component object.
     '''
     def exec_script_on_extjs_cmp(self, js_code):
+
         script = "var extCmp = Ext.getCmp('%s'); %s;" % (
             self.get_component_id(),
             js_code
         )
+
         return self.exec_script_clean(script)
 
     def exec_script_on_extjs_cmp_return_bool(self, js_code):
