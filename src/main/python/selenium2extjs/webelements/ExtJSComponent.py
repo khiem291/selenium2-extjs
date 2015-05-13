@@ -107,7 +107,7 @@ class ExtJSComponent(ExtJSWebElement):
             )
 
         elif query_type == ExtJSQueryType.GetCmp:
-            SCRIPT_GET_CMP % (query)
+            query_script = SCRIPT_GET_CMP % (query)
 
         elif query_type == ExtJSQueryType.Custom:
             query_script = query
