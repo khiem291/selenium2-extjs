@@ -65,7 +65,9 @@ SCRIPT_QUERY_CMP = '''
 SCRIPT_GET_CMP = '''
     return Ext.getCmp("%s").getEl().dom;
 '''
-
+SCRIPT_GET = '''
+    return Ext.get("%s").el.dom
+'''
 # need to handle is xtype to return the Id on GUI
 SCRIPT_TOP_ELEMENT_TO_EXT_JS_ID = '''
     %s;
@@ -111,7 +113,8 @@ class ExtJSComponent(ExtJSWebElement):
 
         elif query_type == ExtJSQueryType.Custom:
             query_script = query
-
+        elif query_type == ExtJSQueryType.Get:
+            query_script = SCRIPT_GET % (query)
         return query_script
 
     def get_el_dom(self):
