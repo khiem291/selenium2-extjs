@@ -172,6 +172,6 @@ class ExtJSComponent(ExtJSWebElement):
 
     def get_expression(self):
         return "Ext.getCmp('%s')" % self.get_component_id()
-    
+
     def get_element(self):
         pass
