@@ -62,6 +62,18 @@ SCRIPT_QUERY_CMP = '''
     return MyExt.findVisibleComponentElement("%s");
 '''
 
+SCRIPT_QUERY_CMP_ALL_IDS = '''
+    var ids = [];
+    var elements = Ext.ComponentQuery.query("%s");
+    
+    for (var i = 0; i < elements.length; i++) {
+        ids.push(elements[i].id);
+    }
+    
+    return ids;
+'''
+
+
 SCRIPT_GET_CMP = '''
     return Ext.getCmp("%s").getEl().dom;
 '''
@@ -90,6 +102,7 @@ class ExtJSComponent(ExtJSWebElement):
                     query_type, query
                 )
             )
+            self.query = query
 
             self.extjs_cmp_id = None
             if query_type == ExtJSQueryType.GetCmp:
@@ -119,6 +132,10 @@ class ExtJSComponent(ExtJSWebElement):
 
     def get_el_dom(self):
         return self.exec_script_on_extjs_cmp("return extCmp.getEl().dom")
+    
+    def get_all_comp_ids(self):
+        js_code = SCRIPT_QUERY_CMP_ALL_IDS % self.query 
+        return self.exec_script_clean(js_code)
 
     def get_component_id(self):
         '''to get Component id by query'''
