@@ -1,5 +1,6 @@
 # Selenium WebDriver ExtJS
 Easily test ExtJS Applications with Selenium WebDriver
+Fork from https://github.com/tayloryork/ExtJsWebDriver
 
 This project was ported to Python from Java from the project forked from tayloryork/SeleniumExtend.
 
